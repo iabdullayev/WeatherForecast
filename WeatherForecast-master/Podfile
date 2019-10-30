@@ -2,7 +2,6 @@ platform :ios, '11.0'
 use_frameworks!
 
 target 'WeatherClient' do
-  pod 'Moya'
 end
 
 post_install do |installer|

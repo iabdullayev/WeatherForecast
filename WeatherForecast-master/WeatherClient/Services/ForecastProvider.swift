@@ -6,44 +6,47 @@
 //  Copyright © 2019 Iskandar Abdullayev. All rights reserved.
 //
 
-import Moya
+import Foundation
 
-enum ForecastProvider {
-    case forecast(String, Double, Double)
-}
+class DarkSkyAPIClient {
+    
+    fileprivate let apiKey = "0e1b7c60d8a3882ff1d92aa714e43da5"
+    
+    lazy var baseUrl: URL = {
+       
+        return URL(string: "https://api.darksky.net/forecast/\(self.apiKey)/")!
 
-extension ForecastProvider: TargetType {
-    var baseURL: URL {
-        return URL(string: "https://api.darksky.net")!
-    }
+    }()
     
-    var path: String {
-        switch self {
-        case let .forecast(apiKey, lat, long):
-            return "/forecast/\(apiKey)/\(lat),\(long)"
+    let downloader = JSONDownloader()
+    
+    typealias CurrentWeatherCompletionHandler = (Forecast?, DarkSkyError?) -> Void
+    
+    func getCurrentWeather(at coordinate: LocationService, completionHandler completion: @escaping CurrentWeatherCompletionHandler) {
+        
+        guard let url = URL(string: coordinate.description, relativeTo: baseUrl) else {
+            completion(nil, .invalidUrl)
+            return
+            
         }
-    }
-    
-    var method: Method {
-        switch self {
-        case .forecast:
-            return .get
+        let request = URLRequest(url: url)
+        
+        let task = downloader.jsonTask(with: request) { json, error in
+            
+            DispatchQueue.main.sync {
+                guard let json = json else {
+                    completion(nil, error)
+                    return
+                }
+                guard let currentWeatherJson = json["currently"] as? [String: AnyObject],
+                    let currentWeather = Forecast(json: currentWeatherJson) else {
+                    completion(nil, .jsonParsingFailure)
+                    return
+                }
+                
+                completion(currentWeather, nil)
+            }
         }
+        task.resume()
     }
-    
-    var sampleData: Data {
-        return "".data(using: .utf8)!
-    }
-    
-    var task: Task {
-        switch self {
-        case .forecast:
-            return .requestPlain
-        }
-    }
-    
-    var headers: [String : String]? {
-        return nil
-    }
-
 }
