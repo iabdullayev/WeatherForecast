@@ -6,6 +6,7 @@
 //  Copyright © 2019 Iskandar Abdullayev. All rights reserved.
 //
 
+import Foundation
 import UIKit
 
 struct DailyForecastViewModel {
@@ -14,19 +15,17 @@ struct DailyForecastViewModel {
     let low: Int
     let image: UIImage?
     
-    static func format(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEEE"
-        return formatter.string(from: date)
-    }
-}
-
-extension DailyForecastViewModel {
-    init?(dailyForecast: DailyDatum) {
-        let date = Date(timeIntervalSince1970: TimeInterval(dailyForecast.time))
-        dayOfTheWeek = DailyForecastViewModel.format(date)
-        high = Int(dailyForecast.temperatureHigh)
-        low = Int(dailyForecast.temperatureLow)
-        image = UIImage(named: dailyForecast.icon)
+    init(model: Forecast) {
+        let highTemperature = Int(model.high)
+        self.high = highTemperature
+        
+        let lowTemperature = Int(model.low)
+        self.low = lowTemperature
+        
+        let weekDay = model.dayOfTheWeek
+        self.dayOfTheWeek = "\(weekDay)"
+        
+        let weatherImageIcon = model.image
+        self.image = weatherImageIcon
     }
 }

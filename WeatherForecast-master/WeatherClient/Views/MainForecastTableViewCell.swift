@@ -22,6 +22,13 @@ class MainForecastTableViewCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
     }
+    
+    func mainDisplayWeather(using viewModel: DailyForecastViewModel) {
+        mainDayLabel.text = viewModel.dayOfTheWeek
+        mainTemperatureLabel.text = String(viewModel.high)
+        mainTemperatureLabel.text = String(viewModel.low)
+        mainWeatherIconImage.image = viewModel.image
+    }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)

@@ -16,6 +16,13 @@ class DailyForecastTableViewCell: UITableViewCell {
     @IBOutlet var temperatureLabel: UILabel!
     @IBOutlet var weatherIconImageView: UIImageView!
 
+    func displayWeather(using viewModel: DailyForecastViewModel) {
+        dayLabel.text = viewModel.dayOfTheWeek
+        temperatureLabel.text = String(viewModel.high)
+        //temperatureLabel.text = String(viewModel.low)
+        weatherIconImageView.image = viewModel.image
+    }
+    
     // MARK: Lifecycle
 
     override func awakeFromNib() {

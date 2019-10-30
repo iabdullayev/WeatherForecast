@@ -10,6 +10,8 @@ import UIKit
 
 class ForecastTableViewController: UITableViewController {
     
+    let client = DarkSkyAPIClient()
+    
     var viewModels: [DailyForecastViewModel] = [] {
         didSet {
             tableView.reloadData()
@@ -22,7 +24,19 @@ class ForecastTableViewController: UITableViewController {
         self.view.backgroundColor = UIColor(patternImage: UIImage(named: "backgroundNightSky.jpg")!)
         
         self.navigationController?.navigationBar.isTranslucent = true
+        
+        let coordinate = LocationService()
+        client.getCurrentWeather(at: coordinate) { [unowned self] currentWeather, error in
+            if let currentWeather = currentWeather {
+                let viewModel = DailyForecastViewModel(model: currentWeather)
+                
+                DailyForecastTableViewCell.displayWeather(viewModel)
+            }
+        }
+        
+        
     }
+    
 
     // MARK: - Table view data source
 
